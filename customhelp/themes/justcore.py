@@ -43,7 +43,9 @@ class JustCore(ThemesMeta):
             for cog_name, data in coms:
                 title = f"**__{cog_name}:__**"
                 cog_text = "\n".join(
-                    shorten_line(f"**{name}** {command.format_shortdoc_for_context(ctx)}")
+                    shorten_line(
+                        f"`{ctx.clean_prefix}{name:<17}:`{command.format_shortdoc_for_context(ctx)}"
+                    )
                     for name, command in sorted(data.items())
                 )
 
@@ -67,7 +69,6 @@ class JustCore(ThemesMeta):
             await ctx.send(_("You need to enable embeds to use the help menu"))
 
     async def format_cog_help(self, ctx: Context, obj: commands.Cog, help_settings: HelpSettings):
-
         coms = await self.get_cog_help_mapping(ctx, obj, help_settings=help_settings)
         if not (coms or help_settings.verify_exists):
             return
@@ -77,7 +78,9 @@ class JustCore(ThemesMeta):
 
             if coms:
                 command_text = "\n".join(
-                    shorten_line(f"**{name}** {command.format_shortdoc_for_context(ctx)}")
+                    shorten_line(
+                        f"`{ctx.clean_prefix}{name:<17}:`{command.format_shortdoc_for_context(ctx)}"
+                    )
                     for name, command in sorted(coms.items())
                 )
                 for i, page in enumerate(pagify(command_text, page_length=500, shorten_by=0)):
@@ -100,7 +103,6 @@ class JustCore(ThemesMeta):
     async def format_command_help(
         self, ctx: Context, obj: commands.Command, help_settings: HelpSettings
     ):
-
         send = help_settings.verify_exists
         if not send:
             async for __ in self.help_filter_func(
@@ -114,7 +116,7 @@ class JustCore(ThemesMeta):
         command = obj
 
         signature = _(
-            "Syntax: {ctx.clean_prefix}{command.qualified_name} {command.signature}"
+            "Usage: {ctx.clean_prefix}{command.qualified_name} {command.signature}"
         ).format(ctx=ctx, command=command)
 
         # Backward compatible.
@@ -179,7 +181,9 @@ class JustCore(ThemesMeta):
                     return a_line[:67] + "..."
 
                 subtext = "\n".join(
-                    shorten_line(f"**{name}** {command.format_shortdoc_for_context(ctx)}")
+                    shorten_line(
+                        f"`{name:<17}:`{command.format_shortdoc_for_context(ctx)}"
+                    )
                     for name, command in sorted(subcommands.items())
                 )
                 for i, page in enumerate(pagify(subtext, page_length=500, shorten_by=0)):
